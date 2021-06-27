@@ -16,7 +16,7 @@ add this to your projects *pom.xml*
 <dependency>
   <groupId>com.github.johannes-adr</groupId>
   <artifactId>PushNotifier4J</artifactId>
-  <version>master-SNAPSHOT</version>
+  <version>V0.1</version>
 </dependency>
 ````
 
