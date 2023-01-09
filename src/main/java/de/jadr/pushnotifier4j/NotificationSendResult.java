@@ -1,11 +1,10 @@
 package de.jadr.pushnotifier4j;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-
+import org.json.JSONArray;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class NotificationSendResult {
 
@@ -13,18 +12,28 @@ public class NotificationSendResult {
 	private final List<String> successIds;
 	private final List<String> failureIds;
 
-	public NotificationSendResult(Device[] devices, JSONObject jo) {
+	public NotificationSendResult(Device[] devices, String responseBody) {
 		this.devices = devices;
-		
-		List<Object> success = jo.getJSONArray("success").toList();
-		List<Object> error = jo.getJSONArray("error").toList();
-		
-		this.successIds = new ArrayList<String>(success.size());
-		this.failureIds = new ArrayList<String>(error.size());
-		for (Object o : success)successIds.add(((HashMap<String, String>)o).get("device_id"));
-		for (Object o : error)failureIds.add(((HashMap<String, String>)o).get("device_id"));
+
+		final JSONObject jo = new JSONObject(responseBody);
+
+		final JSONArray success = jo.getJSONArray("success");
+		final JSONArray error = jo.getJSONArray("error");
+
+		this.successIds = new ArrayList<>(success.length());
+		this.failureIds = new ArrayList<>(error.length());
+
+		for (int i = 0; i < success.length(); i++) {
+			final JSONObject device = success.getJSONObject(i);
+			successIds.add(device.getString("device_id"));
+		}
+
+		for (int i = 0; i < error.length(); i++) {
+			final JSONObject device = success.getJSONObject(i);
+			failureIds.add(device.getString("device_id"));
+		}
 	}
-	
+
 	public Device[] getDevices() {
 		return devices;
 	}
@@ -48,6 +57,4 @@ public class NotificationSendResult {
 		return "NotificationSendResult [successIds=" + successIds
 				+ ", failureIds=" + failureIds + "]";
 	}
-	
-	
 }
